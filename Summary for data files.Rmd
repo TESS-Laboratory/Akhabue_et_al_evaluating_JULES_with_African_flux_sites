@@ -1,0 +1,172 @@
+---
+title: "Notes for flux data cleaning"
+author: "Eni"
+date: "2024-03-04"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## This is the order of the scripts in this directory
+
+1. O2  flux_data_cleaning
+2. ERA5_data_processing
+3. Met_data_comparison
+4. Joining ERA5 with flux data
+5. Final_data_cleaning_before_gap_filling *****
+6. Gap_filling_process (come back to this after partitioning to calculate ET and combine all data set as one file)
+7. For_partitioning - note that these df were generated here to be used (partitioned in) python script
+8. 
+
+## Introduction
+
+This is a summary that details the individual quirks I find with each file. This explains all the corrections I made and the changes I made to the files. I will create separate headings for each site with the site name and describe the changes and cleaning process I carried out.
+Note that I have received these data from different sources and as such, it is expected that there are differences among these data such as file format, observations, data arrangement style, units etc. 
+The purpose of this .Rmd is to document these differences as I work with these data and also the changes I make. Among other things, this is to make my work as transparent as possible and also remind my future self of the things I have done for good reasons.
+I have renamed all the variables to a uniform naming convention that corresponds with the naming used in JULES.
+
+```{r echo=TRUE, warning=FALSE, include=TRUE}
+# This is the list of all the sites I have data on. I will keep populating this list as I receive more data from other sites.
+
+"BJ-BEF"          
+"BJ-BIF"          
+"BJ-NAF"          
+"BW-Gum"          
+"BW-Nxr"          
+"CG-Tch"           
+"GH-Ank"           
+"ML-AgG"          
+"NE-WaF"           
+"NE-WaM"           
+"SD-Dem"           
+"SN-Dhr"          
+"SN-Nkr"           
+"SN-RAG"           
+"UG-Jin"          
+"ZA-Cath"
+"ZA-Kru"          
+"ZA-Wgn"           
+"ZM-Mon"          
+
+```
+
+
+
+## BJ-BEF
+
+This data was downloaded from AMMACATCH database. The original data comprises of flux observation from the year 2005 to 2021 with each year entry in a separate csv file. Each file started out with a comment (#) that describes the data, including the year, coordinates, observations, variable names and variable description. The entries are semi-colon separated.
+I cleaned out the comments from each of the files leaving just the variable names (as the column names). 
+In the analysis on the R script, I have combined all files into one data set, allowing for a continuous time series. This data now comprise of the entire data (from year 2005 - 2021) as one file. 
+
+This data does not have CO2 flux but rather CO2 concentration. Other parameters like LE, H are rarely present in all the year of observation.  
+  
+## BJ-BIF
+This data follows with the same initial procedure for the AMMACATCH data as stated above. 
+This data contains just the meteorological observation for this site and no flux information were recorded.
+
+
+## BJ-NAF
+This data follows same process as the above 2. The data is similar with the BJ_BEF data. However, the met data are better observed in this data.
+
+## BW-Gum
+Not much was done to this data. A quality control flag 0 = good, 1 = fair, 2 = poor, was used across the following variables, HE, LE, CO2, and CH4.
+
+## BW-Nxr
+This data is similar to the BW-Gum data and is from the same PI. The quality flag comment still applies to this data. 
+
+## CG-Tch
+This data was downloaded from the fluxnet database. It comprises of both measured and gapfilled data and a quality control flag indicating the measured and gapfilled data. Using the DC flag, I have selected only the measured variables as a different gapfilled method is being used for this research.
+
+## GH-Ank
+This is also a fluxnet data and as such follows the above.
+
+## ML-AgG
+This is another AMMACATCH data and some of the changes applied to the other data from the same database was applied.
+
+## NE-WaF
+
+The same function to read data (using read_delim) does not work properly for this code. I believe it has to do with the column style and number. At this point, I am using the read_delim(file, delim = ";") for this particular dataset, to specify the separator as this work..
+
+## NE-WaM
+
+## SD-Dem
+This is a fluxnet data.
+
+## SN-Dhr
+
+This file came as a multi-excel sheet consisting of the year 2010-2013 (sheet 1), 2015-2017 (sheet 2), and 2019-2020 (sheet 3). I have separated these into 3 separate books and saved as a csv file. Afterwards, I made changes to the title. These changes include deleting the first few couple of lines that had some (unexplainable numbers) and another row with the units of the variables. I added the variable units to the variable names. After the last entry in the year 2010-2013, there was a comment (read:error) which I also deleted. This was to allow for easy combination of the 3 files.
+
+This data set has missing years (2014, and 2018). However, I have combined these files.The time series plot will indicate that there are missing years.
+
+## SN-Nkr
+
+## SN-RAG
+
+## UG-Jin
+
+The UG-Jin folder contains the met data and the flux date in 2 separate excel book. I saved the files as .CSV so I can work with them. For each of the files, I deleted a couple of rows at the top that contained the minimum and maximum values of each measured variable. There was a separate row for the units of each variable. I combined the unit name and the variable name to be in the same column, and as such deleted the row with the unit name. To read this data set, I have to used a 3rd function using the read.csv() as the other 2 functions with read_delim() and rad_delim(file, delim = ";") does not work for this particular data. 
+
+## ZA-Kru
+
+## ZA-Wgn
+
+## ZA-Cath
+
+This data set was sent with loads of information on the site, instrument and history. Pictures and instrument manual was also included.
+The data came in 2 files, one file containing observation from 2014-2015 and the second file fro, 2016-2023. The is a huge data gap between 2015 and 2016. This happened as a result of vandalism and theft.
+As a result, the instrument height was changed from 2m to 6m changing the foot print measured at the station from 2016. The variables measured also varies across the 2 data set as new instruments where added over time. 
+I also noticed the difference in variable names between both data set. I am going to attempt to correct this manually so I can combine both data set.
+In the case that the footprint change could affect my use of the data, I may opt to use the observation from 2016.
+
+Again, for each data set, there are multiple row breaks (empty row lines), over 20 of them in just the 2016-DATE file.  new column headers are included after the row breaks (that are not in order of place across the data set). 
+(I may have to work with manual changes for this one.) The plan is to eliminate the breaks, solve the issue with the column headers that span multiple rows, and combine the data sets ensuring consistent column structure.
+
+## ZM-Mon
+
+
+
+## Site variables
+
+This section lists the different variables available for each site, including meteorological data.
+
+### BJ-BEF
+#### Variable: 
+LE (W/m2)
+H (W/m2)
+
+#### Met data: 
+Air pressure (mbar)
+Air temperature (degree Celsius) - at height 15m, 18m, 5m 
+incoming long wave radiation (W/m2)
+incoming shortwave radiation (W/m2) - at height 18m, 5m
+outgoing long wave radiation (W/m2)
+outgoing shortwave radiation (W/m2) - at height 18m, 5m
+Relative humidity (%) - at height 15m, 18m, 5m
+wind speed (m/s) - at height 15m, 18m, 5
+
+
+
+### BJ_BIF
+#### Variables: 
+NA
+
+#### Met data:
+Air pressure (mbar)
+air temperature (degree Celsius)
+incoming long wave radiation (W/m2)
+incoming short wave radiation (W/m2)
+relative humidity (%)
+wind speed (m/s)
+
+
+
+### BJ_NAF
+#### Variables:
+
+#### Met data:
+
+
+
