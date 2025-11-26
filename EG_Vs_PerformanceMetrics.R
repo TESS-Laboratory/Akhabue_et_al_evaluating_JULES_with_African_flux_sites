@@ -16,18 +16,6 @@ library(purrr)
 # prepare data (step similar to the one for GLMM, that is fine) ----
 
 
-### if I wanted to compute for the yearly metrics----
-
-# Define path to the stats directory
-#stats_dir <- "C:/workspace/Akhabue-dev/stats_copy"
-
-# List all CSV files
-#stat_files <- list.files(stats_dir, pattern = "_stats_yearly\\.csv$", full.names = TRUE)
-
-# Read and combine all into one dataframe
-#combined_stats <- map_dfr(stat_files, read_csv, show_col_types = FALSE)
-
-
 
 
 # Define path to the stats directory----
