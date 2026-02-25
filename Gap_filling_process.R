@@ -1,11 +1,3 @@
-# Post-hoc data processing
-# this includes;
-# De-spike flux using thresholds ±50
-# calculate mean predictors
-# assign NA values in observation with mean values of prediction
-# make plot to see trends
-# Make plots to observed, gap filled, and uncertainty (just like Songyan's plot) for each site
-
 # load library ----
 library(dplyr)
 library(ggplot2)
@@ -14,7 +6,7 @@ library(readr)
 library(tidyverse)
 
 
-# run code ----
+
 
 
 ## for all sites for CO2----
@@ -397,4 +389,4 @@ for (site in sites) {
   write_csv(df, output_file)
 }
 
-message("🌍✅ ET added for all sites!")
+message("T added for all sites!")

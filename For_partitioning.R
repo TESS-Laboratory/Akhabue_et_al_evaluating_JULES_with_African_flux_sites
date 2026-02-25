@@ -1,4 +1,4 @@
-# This is to prepare data fro flux partitioning that was done in python.
+# This is to prepare data for flux partitioning that was done in python.
 # The processed scripts were moved to continue flux partitioning in Python using Anaconda Jupyter.
 
 
