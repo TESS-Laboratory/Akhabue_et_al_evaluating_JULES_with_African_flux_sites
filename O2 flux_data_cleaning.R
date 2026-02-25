@@ -10,13 +10,13 @@ library(lubridate)
 
 
 
-#    ✓ Code to return list of all subdirectory names in external data directory (using absolute file path) ----
+#    ✓ Code to return list of all sub-directory names in external data directory (using absolute file path) ----
 
 # Define the absolute file path to the external data directory
 external_data_dir <- "C:/Users/efa206/OneDrive - University of Exeter/Desktop/O2-/WITH DATA"
 
 
-#    ✓ Next step load metadata file? to facilitate your own QAQC to check what proportion of site you hold data for etc.----
+#    ✓ Next step load metadata file? to facilitate QAQC to check what proportion of site hold data for etc.----
 
 file_path <- "C:/workspace/Akhabue-dev/African_flux_meta_data.csv"
 African_flux_meta_data <- read_csv(file_path)
@@ -27,10 +27,10 @@ African_flux_meta_data <- read_csv(file_path)
 # FUNCTIONS ----
 
 #    ✓ Some sub directory have multiple files, some of which need to be merged to make a single file. write 2 functions for directories with single file and with multiple files.
-#       if there is a way to have just one function that with an argument to suggest that it returns multiple files if multiple files are found in the directory.
 
 
-## Function to list all subdirectories within a directory----
+
+## Function to list all sub-directories within a directory----
 list_subdirectories <- function(directory) {
   dirs <- list.dirs(directory, recursive = TRUE, full.names = FALSE)
   # Filter out empty strings
@@ -43,7 +43,7 @@ subdirectories <- list_subdirectories(external_data_dir)
 print(subdirectories)
 
 
-## Function to load files and perform operation within directory. I have written 6 different function to suite the different kinds of data format I have. ----
+## Function to load files and perform operation within directory. I have written 6 different function to suite the different kinds of data format ----
 
 ###   ✓ Define a function to load files within a directory----
 load_files1 <- function(directory) {
@@ -161,27 +161,26 @@ BW_GUM <- (bw_gum_data[["BW_GUM_2018_2020.csv"]])
 
 
 # Replace -9999.9 with NA in BW_GUM dataset
-BW_GUM[BW_GUM == -9999] <- NA
-BW_GUM[BW_GUM == -999900] <- NA
-BW_GUM[BW_GUM == -999900.00000] <- NA
+BW_GUM <- BW_GUM %>%
+  mutate(across(where(is.numeric),
+                ~ replace(., . %in% c(-9999, -999900, -999900.00000), NA)))
 
 # Convert the date column to datetime objects UTC format
 BW_GUM$date <- dmy_hm(BW_GUM$date)
 
 
 
-# select the columns I need
+# select the columns needed
 new_BW_GUM_vars <- c("date", "H", "LE", "co2_flux")
 
 BW_GUM_Flux<- BW_GUM %>% dplyr::select(one_of(new_BW_GUM_vars))
-#View(BW_GUM_Flux)
 
 
 #Change the variable names to uniform names across all sites???
 
 BW_GUM_Flux_new <- BW_GUM_Flux %>% rename(`sensible_heat_W/m²` = `H`, `latent_heat_W/m²` = `LE`, 
                                           `co2_flux_μmol.m-2.s-1` = `co2_flux`)
-#View(BW_GUM_Flux_new)
+
 
 
 # Replace extreme values with NA in sensible_heat_W/m²
@@ -223,9 +222,12 @@ bw_nxr_summaries <- perform_operations(bw_nxr_data)
 # Move bw_nxr to a simpler df
 BW_NXR <- (bw_nxr_data[["BW_NXA_2018_2020.csv"]])
 
-# Replace -9999.9 with NA in BW_GUM dataset
-BW_NXR[BW_NXR == -9999] <- NA
-BW_NXR[BW_NXR == -999900] <- NA
+# Replace -9999.9 with NA in BW_NXR dataset
+BW_NXR <- BW_NXR %>%
+  mutate(across(where(is.numeric),
+                ~ replace(., . %in% c(-9999, -999900), NA)))
+
+
 
 # Convert the date column to datetime objects UTC format
 BW_NXR$date <- dmy_hm(BW_NXR$date)
@@ -235,14 +237,14 @@ BW_NXR$date <- dmy_hm(BW_NXR$date)
 new_BW_NXR_vars <- c("date", "H", "LE", "co2_flux")
 
 BW_NXR_Flux<- BW_NXR %>% dplyr::select(one_of(new_BW_NXR_vars))
-#View(BW_NXR_Flux)
+
 
 
 #Change the variable names to uniform names across all sites???
 
 BW_NXR_Flux_new <- BW_NXR_Flux %>% rename(`sensible_heat_W/m²` = `H`, `latent_heat_W/m²` = `LE`, 
                                           `co2_flux_μmol.m-2.s-1` = `co2_flux`)
-#View(BW_NXR_Flux_new)
+
 
 
 
@@ -252,6 +254,8 @@ BW_NXR_Flux_new$`sensible_heat_W/m²` <- ifelse(
   NA,
   BW_NXR_Flux_new$`sensible_heat_W/m²`
 )
+
+
 
 # Replace extreme values with NA in latent_heat_W/m²
 BW_NXR_Flux_new$`latent_heat_W/m²` <- ifelse(
@@ -295,7 +299,6 @@ new_CG_TCH_vars <- c("TIMESTAMP_START", "H_F_MDS", "H_F_MDS_QC", "LE_F_MDS", "LE
                      "NEE_VUT_REF_QC", "NEE_CUT_REF", "NEE_CUT_REF_QC")
 
 CG_TCH_Flux<- CG_TCH %>% dplyr::select(one_of(new_CG_TCH_vars))
-#View(CG_TCH_Flux)
 
 
 # Create new columns for each variable, retaining values only where QC is 0
@@ -311,7 +314,6 @@ new_CG_TCH_vars_2 <- c("TIMESTAMP_START", "H_F_MDS_Measured", "LE_F_MDS_Measured
                     "NEE_CUT_REF_Measured")
 
 CG_TCH_Flux_new<- CG_TCH_Measured %>% dplyr::select(one_of(new_CG_TCH_vars_2))
-#View(CG_TCH_Flux)
 
 
 
@@ -322,17 +324,15 @@ CG_TCH_Flux_new <- CG_TCH_Flux_new %>% rename(`sensible_heat_W/m²` = `H_F_MDS_M
                                               `v_co2_flux_μmol.m-2.s-1` = `NEE_VUT_REF_Measured`, 
                                               `c_co2_flux_μmol.m-2.s-1` = NEE_CUT_REF_Measured)
 
-#View(CG_TCH_Flux_new)
 
 
 
-
-# select the columns I need for meteorological data
+# select the columns needed for meteorological data
 new_CG_TCH_met <- c("TIMESTAMP_START", "TA_F_MDS", "TA_F_MDS_QC", "SW_IN_F_MDS", "SW_IN_F_MDS_QC", "LW_IN_ERA", "VPD_F_MDS", "VPD_F_MDS_QC",
                     "P", "WS", "RH")
 
 CG_TCH_MET<- CG_TCH %>% dplyr::select(one_of(new_CG_TCH_met))
-#View(CG_TCH_MET)
+
 
 
 
@@ -369,7 +369,7 @@ new_GH_ANK_vars <- c("TIMESTAMP_START", "H_F_MDS", "H_F_MDS_QC", "LE_F_MDS", "LE
                      "NEE_VUT_REF", "NEE_VUT_REF_QC", "NEE_CUT_REF", "NEE_CUT_REF_QC")
 
 GH_ANK_Flux<- GH_ANK%>% dplyr::select(one_of(new_GH_ANK_vars))
-#View(GH_ANK_Flux)
+
 
 
 
@@ -388,8 +388,6 @@ new_GH_ANK_vars_2 <- c("TIMESTAMP_START", "H_F_MDS_Measured", "LE_F_MDS_Measured
                        "NEE_CUT_REF_Measured")
 
 GH_ANK_Flux_new<- GH_ANK_Measured %>% dplyr::select(one_of(new_GH_ANK_vars_2))
-#View(CG_TCH_Flux)
-
 
 
 
@@ -408,7 +406,7 @@ new_GH_ANK_met <- c("TIMESTAMP_START", "TA_F_MDS", "TA_F_MDS_QC", "SW_IN_F_MDS",
 
 
 GH_ANK_MET<- GH_ANK %>% dplyr::select(one_of(new_GH_ANK_met))
-#View(GH_ANK_MET)
+
 
 
 # Create new columns for each variable, retaining values only where QC is 0
@@ -431,28 +429,28 @@ ml_agg_summaries <- perform_operations(ml_agg_data)
 ML_AgG <- bind_rows(ml_agg_data)
 
 # Replace -9999.9 with NA in the dataset
-ML_AgG[ML_AgG == -9999.9] <- NA
-ML_AgG[ML_AgG == -9999.90000] <- NA
+ML_AgG <- ML_AgG %>%
+  mutate(across(where(is.numeric),
+                ~ replace(., . %in% c(-9999.9, -9999.90000), NA)))
 
 
 # select the columns I need
 new_ML_AgG_vars <- c("date_end_UTC", "Carbon Dioxide Flux", "Latent Heat Flux", "Sensible Heat Flux")
 
 ML_AgG_Flux<- ML_AgG %>% dplyr::select(one_of(new_ML_AgG_vars))
-#View(ML_AgG_Flux)
 
 
 #Change the variable names to uniform names across all sites???
 ML_AgG_Flux_new <- ML_AgG_Flux %>% rename(`sensible_heat_W/m²` = `Sensible Heat Flux`, `latent_heat_W/m²` = `Latent Heat Flux`, 
                                           `co2_flux_μmol.m-2.s-1` = `Carbon Dioxide Flux`)
 
-#View(ML_AgG_Flux_new)
+
 
 # select the columns I need
 new_ML_AgG_MET <- c("date_end_UTC", "Air Temperature", "Wind Speed")
 
 ML_AgG_MET<- ML_AgG %>% dplyr::select(one_of(new_ML_AgG_MET))
-#View(ML_AgG_MET)
+
 
 # load Met data gotten from meteorological station from AMMACATCH database 
 
@@ -464,15 +462,15 @@ ML_AgG_met_station <- bind_rows(ml_agg_met_data)
 
 
 # Replace -9999.9 with NA in dataset
-ML_AgG_met_station[ML_AgG_met_station == -9999.9] <- NA
-ML_AgG_met_station[ML_AgG_met_station == -9999.90000] <- NA
+ML_AgG_met_station <- ML_AgG_met_station %>%
+  mutate(across(where(is.numeric),
+                ~ replace(., . %in% c(-9999.9, -9999.90000), NA)))
 
 
 # select the columns I need
 new_ML_AgG_met_station <- c("date_end_UTC", "Air Temperature", "Air Pressure", "Incoming Shortwave Radiation")
 
 ML_AgG_met_station<- ML_AgG_met_station %>% dplyr::select(one_of(new_ML_AgG_met_station))
-#View(ML_AgG_MET)
 
 
 
@@ -491,9 +489,9 @@ NE_WaF <- bind_rows(ne_waf_data)
 
 
 # Replace -9999.9 with NA in BJ_BIF_MET dataset
-NE_WaF[NE_WaF == -9999.9] <- NA
-NE_WaF[NE_WaF== -9999.900] <- NA
-NE_WaF[NE_WaF== -9999.90000] <- NA
+NE_WaF <- NE_WaF %>%
+  mutate(across(where(is.numeric),
+                ~ replace(., . %in% c(-9999.9, -9999.900, -9999.90000), NA)))
 
 
 # select the columns I need
@@ -503,10 +501,11 @@ NE_WaF_Flux<- NE_WaF %>% dplyr::select(one_of(new_NE_WaF_vars))
 #View(NE_WaF_Flux)
 
 
-#Change the variable names to uniform names across all sites???
+#Change the variable names to uniform names across all sites
 NE_WaF_Flux_new <- NE_WaF_Flux %>% rename(`sensible_heat_W/m²` = `Sensible Heat Flux`, `latent_heat_W/m²` = `Latent Heat Flux`, 
                                           `co2_flux_μmol.m-2.s-1` = `Carbon Dioxide Flux`)
-#View(NE_WaF_Flux_new)
+
+
 
 
 # select the columns I need FOR MET
@@ -515,7 +514,7 @@ new_NE_WaF_MET <- c("date_end_UTC", "Air Temperature", "Incoming Longwave Radiat
                     
 
 NE_WaF_MET<- NE_WaF %>% dplyr::select(one_of(new_NE_WaF_MET))
-#View(NE_WaF_MET)
+
 
 
 # data from Jerome - Jerome sent data and including met, LAI, soil and surface fluxes
@@ -534,43 +533,42 @@ ne_wam_summaries <- perform_operations(ne_wam_data)
 NE_WaM <- bind_rows(ne_wam_data)
 
 # Replace -9999.9 with NA in NE_WAM_MET dataset
-NE_WaM[NE_WaM == -9999.9] <- NA
-NE_WaM[NE_WaM== -9999.9000] <- NA
-NE_WaM[NE_WaM== -9999.90000] <- NA
+NE_WaM <- NE_WaM %>%
+  mutate(across(where(is.numeric),
+                ~ replace(., . %in% c(-9999.9, -9999.9000, -9999.90000), NA)))
 
 
 
-# select the columns I need
+# select the columns needed
 new_NE_WaM_vars <- c("date_end_UTC", "Carbon Dioxide Flux", "Latent Heat Flux", "Sensible Heat Flux")
 
 NE_WaM_Flux<- NE_WaM %>% dplyr::select(one_of(new_NE_WaM_vars))
-#View(NE_WaM_Flux)
+
 
 
 #Change the variable names to uniform names across all sites???
 NE_WaM_Flux_new <- NE_WaM_Flux %>% rename(`sensible_heat_W/m²` = `Sensible Heat Flux`, `latent_heat_W/m²` = `Latent Heat Flux`, 
                                           `co2_flux_μmol.m-2.s-1` = `Carbon Dioxide Flux`)
 
-#View(NE_WaM_Flux_new)
 
 
 
-# select the columns I need FOR MET
+
+# select the columns needed FOR MET
 new_NE_WaM_MET <- c("date_end_UTC", "Air Temperature", "Incoming Longwave Radiation", 
                     "Incoming Shortwave Radiation", "Relative Humidity")
 
 
 NE_WaM_MET<- NE_WaM %>% dplyr::select(one_of(new_NE_WaM_MET))
-#View(NE_WaM_MET)
 
 
 
-# data from Jerome - Jerome sent data and including met, LAI, soil and surface fluxes
+
+# data from Jerome - including met, LAI, soil and surface fluxes
 NE_WAM_MET <- read.csv("C:/Users/efa206/OneDrive - University of Exeter/Desktop/O2-/WITH DATA/NE-WAM-MET/NE_WAM_MET.csv")
 NE_WAM_MET[NE_WAM_MET == -9999] <- NA
 
 NE_WAM_MET$TIMESTAMP_START <- dmy_hm(NE_WAM_MET$TIMESTAMP_START)
-
 
 
 
@@ -599,7 +597,6 @@ new_SD_DEM_vars <- c("TIMESTAMP_START", "H_F_MDS", "H_F_MDS_QC", "LE_F_MDS", "LE
                      "NEE_VUT_REF_QC", "NEE_CUT_REF", "NEE_CUT_REF_QC")
 
 SD_DEM_Flux<- SD_Dem %>% dplyr::select(one_of(new_SD_DEM_vars))
-#View(SD_DEM_Flux)
 
 
 
@@ -617,7 +614,6 @@ new_SD_DEM_vars_2 <- c("TIMESTAMP_START", "H_F_MDS_Measured", "LE_F_MDS_Measured
                        "NEE_CUT_REF_Measured")
 
 SD_DEM_Flux_new<- SD_DEM_Measured %>% dplyr::select(one_of(new_SD_DEM_vars_2))
-#View(CG_TCH_Flux)
 
 
 
@@ -630,14 +626,11 @@ SD_DEM_Flux_new <- SD_DEM_Flux_new %>% rename(`sensible_heat_W/m²` = `H_F_MDS_M
 
 
 
-
-
-# select the columns I need for meteorological data
+# select the columns needed for meteorological data
 new_SD_DEM_met <- c("TIMESTAMP_START", "TA_F_MDS", "TA_F_MDS_QC", "SW_IN_F_MDS",
                     "SW_IN_F_MDS_QC", "VPD_F_MDS_QC", "VPD_F_MDS", "PA", "P", "WS", "RH")
 
 SD_DEM_MET<- SD_Dem %>% dplyr::select(one_of(new_SD_DEM_met))
-#View(SD_DEM_MET)
 
 
 # Create new columns for each variable, retaining values only where QC is 0
@@ -653,7 +646,7 @@ SD_DEM_MET <- SD_DEM_MET %>%
 ###   ✓ DAHRA_FLUX STATION - (probably add more info in this comment) ----
 # Load files and perform operations within the SN-Dhr subdir
 # this dataset is multisheet and needs to be corrected first before carrying out any operation here
-# separate the sheets into 3 files and save as .csv, then load - I have done this, but the time series does not follow accordingly. there is 2010-2013 but no 2014, then 2015-2017, no 2018, then 2019-2020
+# separate the sheets into 3 files and save as .csv, then load - 
 sn_dhr_data <- load_files1(file.path(external_data_dir, "SN-Dhr"))
 sn_dhr_summaries <- perform_operations(sn_dhr_data)
 
@@ -682,7 +675,7 @@ SN_Dhr$DateTime <- as.POSIXct(paste(SN_Dhr$date_yyyymmdd, SN_Dhr$time_str), form
 SN_Dhr <- SN_Dhr %>% select(date_yyyymmdd, time_HHMM, time_str, DateTime, everything())
 
 #---#---#---#---#---#---
-# After this I realized that the time interval is not a half hourly, instead a second/minute is missing. So I am rounding this up
+# the time interval is not a half hourly, instead a second/minute is missing. So I am rounding this up
 # Adjust time intervals to ensure consistent 30-minute intervals
 SN_Dhr$minutes <- round(SN_Dhr$minutes / 30) * 30
 
@@ -701,14 +694,13 @@ SN_Dhr <- SN_Dhr %>% select(date_yyyymmdd, time_HHMM, time_str, time_str2, DateT
 
 
 # Replace -9999.9 with NA in SN_DHR dataset
-SN_Dhr[SN_Dhr == -9999] <- NA
-SN_Dhr[SN_Dhr == -9999.0000000] <- NA
-SN_Dhr[SN_Dhr == -9.999000e+03] <- NA
-SN_Dhr[SN_Dhr == -9999.000000] <- NA
-SN_Dhr[SN_Dhr == -9999.00000] <- NA
-SN_Dhr[SN_Dhr == -9999.0000] <- NA
-#SN_Dhr[SN_Dhr == 0.000000000] <- NA
-#SN_Dhr[SN_Dhr == 0.000000] <- NA    #CONSIDER PRECIPITATION OBSERVATION.There are times where P was = 0 and this assignment may impact that.
+SN_Dhr <- SN_Dhr %>%
+  mutate(across(where(is.numeric),
+                ~ replace(., . %in% c(-9999, -9999.0000, -9999.00000, -9999.0000000,
+                                      -9.999000e+03, -9999.000000), NA)))
+
+
+
 
 
 
@@ -716,13 +708,13 @@ SN_Dhr[SN_Dhr == -9999.0000] <- NA
 new_SN_Dhr_vars <- c("DateTime2", "co2_flux", "LE [W+1m-2]", "H [W+1m-2]")
 
 SN_Dhr_Flux<- SN_Dhr %>% dplyr::select(one_of(new_SN_Dhr_vars))
-#View(SN_Dhr_Flux)
+
 
 
 #Change the variable names to uniform names across all sites???
 SN_Dhr_Flux_new <- SN_Dhr_Flux %>% rename(`sensible_heat_W/m²` = `H [W+1m-2]`, `latent_heat_W/m²` = `LE [W+1m-2]`, 
                                           `co2_flux_μmol.m-2.s-1` = `co2_flux`)
-#View(SN_Dhr_Flux_new)
+
 
 
 # select the columns I need FOR MET
@@ -731,7 +723,7 @@ new_SN_Dhr_MET <- c("DateTime2", "Net radiation (W m-2)", "AirTemp_2.0 M (oC)",
 
 
 SN_Dhr_MET<- SN_Dhr %>% dplyr::select(one_of(new_SN_Dhr_MET))
-#View(SN_Dhr_MET)
+
 
 
 
@@ -745,20 +737,19 @@ sn_nkr_summaries <- perform_operations(sn_nkr_data)
 SN_Nkr <- bind_rows(sn_nkr_data)
 
 # Replace -9999.9 with NA in SN_NKR dataset
-SN_Nkr[SN_Nkr == -9999.9] <- NA
-SN_Nkr[SN_Nkr == -9999.90000] <- NA
-SN_Nkr[SN_Nkr == -9999.9000] <- NA
-SN_Nkr[SN_Nkr == -9999.900] <- NA
+SN_Nkr <- SN_Nkr %>%
+  mutate(across(where(is.numeric),
+                ~ replace(., . %in% c(-9999.9, -9999.90000, -9999.9000, -9999.900), NA)))
 
 
 
-# select the columns I need # use the 20m add reason to summary.rmd
+# select the columns needed # use the 20m add reason to summary.rmd
 new_SN_Nkr_vars <- c("date_end_UTC", "Latent Heat Flux at height 20 m", "Latent Heat Flux at height 4.5 m", 
                      "Net Ecosystem Exchange of CO2 at height 20 m", "Net Ecosystem Exchange of CO2 at height 4.5 m", 
                      "Sensible Heat Flux at height 20 m", "Sensible Heat Flux at height 4.5 m")
 
 SN_Nkr_Flux<- SN_Nkr %>% dplyr::select(one_of(new_SN_Nkr_vars))
-#View(SN_Nkr_Flux)
+
 
 
 #Change the variable names to uniform names across all sites???
@@ -769,7 +760,6 @@ SN_Nkr_Flux_new <- SN_Nkr_Flux %>% rename(`sensible_heat_20m_W/m²` = `Sensible 
                                           `co2_flux_20m_μmol.m-2.s-1` = `Net Ecosystem Exchange of CO2 at height 20 m`,
                                           `co2_flux_4.5m_μmol.m-2.s-1` = `Net Ecosystem Exchange of CO2 at height 4.5 m`)
 
-#View(SN_Nkr_Flux_new)
 
 # This met data was from another sensor/rain gauge different from the flux tower.this was gotten from
 # AMMACATCH
@@ -785,7 +775,14 @@ SN_Nkr_met <- bind_rows(sn_nkr_met_data)
 SN_Nkr_met[SN_Nkr_met == -9999.9] <- NA
 SN_Nkr_met[SN_Nkr_met == -9999.90000] <- NA
 
-# select the columns I need # use the 20m add reason to summary.rmd
+
+SN_Nkr_met <- SN_Nkr_met %>%
+  mutate(across(where(is.numeric),
+                ~ replace(., . %in% c(-9999.9, -9999.90000), NA)))
+
+
+
+# select the columns needed # use the 20m add reason to summary.rmd
 new_SN_Nkr_met_vars <- c("date_end_UTC", "Air Pressure at height 20 m", "Air Temperature at height 2 m",
                      "Air Temperature at height 20 m", "Precipitation Amount", "Relative Humidity at height 2 m",                          
                      "Relative Humidity at height 20 m", "Wind Speed at height 20 m", 
@@ -794,7 +791,7 @@ new_SN_Nkr_met_vars <- c("date_end_UTC", "Air Pressure at height 20 m", "Air Tem
 
 
 SN_NKR_MET <- SN_Nkr_met %>% dplyr::select(one_of(new_SN_Nkr_met_vars))
-#View(SN_Nkr_met_data)
+
 
 
 
@@ -811,9 +808,11 @@ sn_rag_summaries <- perform_operations(sn_rag_data)
 SN_RAG <- bind_rows(sn_rag_data)
 
 # Replace -9999.9 with NA in BJ_BIF_MET dataset
-SN_RAG[SN_RAG == -9999.9] <- NA
-SN_RAG[SN_RAG == -9999.90000] <- NA
-SN_RAG[SN_RAG == -9999.900] <- NA
+SN_RAG <- SN_RAG %>%
+  mutate(across(where(is.numeric),
+                ~ replace(., . %in% c(-9999.9, -9999.900, -9999.90000), NA)))
+
+
 
 
 
@@ -821,21 +820,21 @@ SN_RAG[SN_RAG == -9999.900] <- NA
 new_SN_RAG_vars <- c("date_end_UTC", "Carbon Dioxide Flux", "Latent Heat Flux", "Sensible Heat Flux")
 
 SN_RAG_Flux<- SN_RAG %>% dplyr::select(one_of(new_SN_RAG_vars))
-#View(SN_RAG_Flux)
+
 
 
 #Change the variable names to uniform names across all sites???
 SN_RAG_Flux_new <- SN_RAG_Flux %>% rename(`sensible_heat_W/m²` = `Sensible Heat Flux`, `latent_heat_W/m²` = `Latent Heat Flux`, 
                                           `co2_flux_μmol.m-2.s-1` = `Carbon Dioxide Flux`)
 
-#View(SN_RAG_Flux_new)
 
-# select the columns I need FOR MET
+
+# select the columns FOR MET
 new_SN_RAG_MET <- c("date_end_UTC", "Wind Speed")
 
 
 SN_RAG_MET<- SN_RAG %>% dplyr::select(one_of(new_SN_RAG_MET))
-#View(SN_RAG_MET)
+
 
 
 
@@ -850,17 +849,18 @@ sn_rag_met_summaries <- perform_operations(sn_rag_met_data)
 SN_rag_met <- bind_rows(sn_rag_met_data)
 
 # Replace -9999.9 with NA in SN_NKR dataset
-SN_rag_met[SN_rag_met == -9999.9] <- NA
-SN_rag_met[SN_rag_met == -9999.90000] <- NA
+SN_rag_met <- SN_rag_met %>%
+  mutate(across(where(is.numeric),
+                ~ replace(., . %in% c(-9999.9, -9999.90000), NA)))
 
-# select the columns I need 
+
+
+
+# select the columns 
 new_SN_rag_met_vars <- c("date_end_UTC", "Air_temperature", "Relative_Humidity") 
 
 
 SN_rag_met_data <- SN_rag_met %>% dplyr::select(one_of(new_SN_rag_met_vars))
-#View(SN_Nkr_met_data)
-
-
 
 
 ###   ✓ JINJA_FLUX STATION - (probably add more info in this comment) ----
@@ -876,6 +876,7 @@ UG_JIN_Met <- (ug_jin_data[["UG-JinMet03_01_12.csv"]])
 
 UG_JIN[UG_JIN == -9999] <- NA
 UG_JIN_Met[UG_JIN_Met == -9999] <- NA
+
 
 
 # converting the date and time to usable format. first, ensure the date is in the proper format
@@ -911,17 +912,19 @@ UG_JIN <- UG_JIN %>%
 new_UG_JIN_vars <- c("DateTime", "carbon_dioxide", "latent_heat", "sensible_heat")
 
 UG_JIN_Flux<- UG_JIN %>% dplyr::select(one_of(new_UG_JIN_vars))
-#View(UG_JIN_Flux)
+
 
 
 #Change the variable names to uniform names across all sites???
 UG_JIN_Flux_new <- UG_JIN_Flux %>% rename(`sensible_heat_W/m²` = `sensible_heat`, `latent_heat_W/m²` = `latent_heat`, 
                                           `co2_flux_μmol.m-2.s-1` = `carbon_dioxide`)
-#View(UG_JIN_Flux_new)
+
 
 
 # converting the time and date to usable format. Firstly, ensure the date is in the proper format
 UG_JIN_Met$date_ddmmyy <- dmy(UG_JIN_Met$date_ddmmyy)
+
+
 
 # Function to convert the time format
 convert_time <- function(time) {
@@ -955,7 +958,7 @@ new_UG_JIN_Met_vars <- c("DateTime", "precipitation_mm", "global_or_short_wave_i
 
 
 UG_JIN_MET<- UG_JIN_Met %>% dplyr::select(one_of(new_UG_JIN_Met_vars))
-#View(UG_JIN_MET_Data)
+
 
 
 
@@ -963,15 +966,6 @@ UG_JIN_MET<- UG_JIN_Met %>% dplyr::select(one_of(new_UG_JIN_Met_vars))
 
 
 ###   ✓ CATHEDRAL-PEAK_FLUX STATION - (probably add more info in this comment) ----
-# Load files and perform operations within the ZA-XxD-Cathedral subdir
-# This data is multisheet and that needs to be fixed.the time series does not also follow because there was a gap year.
-
-# Merge all data frames in cathedral peak row-wise
-# Before I bind this, I need to change some variable names to match ✓
-# Also, the 2014 data has lots of mismatched variable and not all variables were listed ✓
-# I will send an email to the data owners to ask for more info and clarity ✓
-# cath <- bind_rows(cathedral_peak_data) ✓
-
 
 cathedral_peak_data <- load_files4(file.path(external_data_dir, "ZA-Cath"))
 cathedral_peak_summaries <- perform_operations(cathedral_peak_data)
@@ -1041,11 +1035,7 @@ ZA_CATH_MET <- ZA_Cath_Flux_2016 %>% dplyr::select(one_of(new_ZA_Cath_met))
 
 
 
-
-
- ### this is for 2014 data. I am no longer combining this data with the above data, as I have decided to consider both data
- ### separately and move forward with the 2016-date data. there might be opportunity to work with the other data in the future or not.
- ### load 2014 data
+ ### this is for 2014 data.
 
 
     cath_2014 <- (cathedral_peak_data[["Cath_peak_2014-2015.csv"]])
@@ -1138,7 +1128,7 @@ new_ZA_Kru_vars <- c("TIMESTAMP_START", "H_F_MDS", "H_F_MDS_QC", "LE_F_MDS", "LE
                      "NEE_VUT_REF", "NEE_VUT_REF_QC", "NEE_CUT_REF", "NEE_CUT_REF_QC")
 
 ZA_Kru_Flux<- ZA_Kru %>% dplyr::select(one_of(new_ZA_Kru_vars))
-#View(ZA_Kru_Flux)
+
 
 
 # Create new columns for each variable, retaining values only where QC is 0
@@ -1154,7 +1144,7 @@ new_ZA_Kru_vars_2 <- c("TIMESTAMP_START", "H_F_MDS_Measured", "LE_F_MDS_Measured
                        "NEE_CUT_REF_Measured")
 
 ZA_Kru_Flux_new<- ZA_Kru_Measured %>% dplyr::select(one_of(new_ZA_Kru_vars_2))
-#View(ZA_KRU_Flux)
+
 
 
 #Change the variable names to uniform names across all sites???
@@ -1164,14 +1154,14 @@ ZA_Kru_Flux_new <- ZA_Kru_Flux_new %>% rename(`sensible_heat_W/m²` = `H_F_MDS_M
 
 
 
-#View(ZA_KRU_Flux_new)
 
 # select the columns I need for meteorological data
 new_ZA_Kru_met <- c("TIMESTAMP_START", "TA_F_MDS", "TA_F_MDS_QC", "SW_IN_F_MDS", "SW_IN_F_MDS_QC",
                     "LW_IN_F_MDS", "LW_IN_F_MDS_QC", "PA", "PA_ERA", "P", "WS", "RH", "VPD_F_MDS", "VPD_F_MDS_QC")
 
 ZA_Kru_MET<- ZA_Kru %>% dplyr::select(one_of(new_ZA_Kru_met))
-#View(ZA_Kru_MET)
+
+
 
 # Create new columns for each variable, retaining values only where QC is 0
 ZA_KRU_MET<- ZA_Kru_MET %>%
@@ -1188,9 +1178,7 @@ ZA_KRU_MET<- ZA_Kru_MET %>%
 
 ###   ✓ WELGEGUND_FLUX STATION - (probably add more info in this comment) ----
 # Load files and perform operations within the ZA-Wgn subdir ✓
-# there is an issue with this data (part 1 and 2 of 201105), sort this out manually and combine ✓
-# I haven't combined this yet because all files (119) are not in particular regular. ✓
-# 67 of them have 24 more variables (columns). ✓
+
 
 za_wgn_data <- load_files5(file.path(external_data_dir, "ZA-Wgn"))
 za_wgn_summaries <- perform_operations(za_wgn_data)
@@ -1200,19 +1188,20 @@ ZA_Wgn <- bind_rows(za_wgn_data)
 
 
 # Replace -9999.9 with NA in ZA_WGN dataset
-ZA_Wgn[ZA_Wgn== -999.000] <- NA
-ZA_Wgn[ZA_Wgn== -9.99] <- NA
+ZA_Wgn <- ZA_Wgn %>%
+  mutate(across(where(is.numeric),
+                ~ replace(., . %in% c(-999.000, -9.99), NA)))
 
 
 colnames(ZA_Wgn)[colnames(ZA_Wgn) == "period end"] <- "period_end"
 
-# select the columns I need
+# select the columns 
 new_ZA_Wgn_vars <- c("period_end", "CO2 mole flux density: Fs/Mc [umol m-2 s-1 ?]", 
                      "Webb corrected CO2 flux: FSW [mg m-2 s-1]", "latent heat flux: FL [W m-2]", 
                      "sensible heat flux: FH [W m-2]") #CO2 mass flux density: Fs/1000 [mg m-2 s-2]
 
 ZA_Wgn_Flux<- ZA_Wgn %>% dplyr::select(one_of(new_ZA_Wgn_vars))
-#View(ZA_Wgn_Flux)
+
 
 
 #Change the variable names to uniform names across all sites???
@@ -1258,7 +1247,7 @@ new_ZA_Wgn_MET <-c("period_end", "wind speed [m/s]", "avg(Ts) [C]", "relative hu
 
 
 ZA_WGN_MET<- ZA_Wgn %>% dplyr::select(one_of(new_ZA_Wgn_MET))
-#View(ZA_Wgn_MET)
+
 
 
 # For the meteorological dataset sent along this flux data. This is a 15min data and from a different instrumentation from the EC
@@ -1286,11 +1275,10 @@ colnames(za_wgn_met_instr_all)[1:44] <- new_col_names
 za_wgn_met_instr_all$date_time <- ymd_hms(za_wgn_met_instr_all$date_time)
 
 # Replace -9999.9 with NA in ZA_WGN dataset
-za_wgn_met_instr_all[za_wgn_met_instr_all== -999] <- NA
-za_wgn_met_instr_all[za_wgn_met_instr_all== -999.000] <- NA
-za_wgn_met_instr_all[za_wgn_met_instr_all== -999.0000] <- NA
-za_wgn_met_instr_all[za_wgn_met_instr_all== -999.00000] <- NA
-za_wgn_met_instr_all[za_wgn_met_instr_all== -999.000000] <- NA
+za_wgn_met_instr_all <- za_wgn_met_instr_all %>%
+  mutate(across(where(is.numeric),
+                ~ replace(., . %in% c(-999, -999.00, -999.0000, -9999.00000, -999.000000), NA)))
+
 
 
 # select the columns I need FOR MET that are from the met station instrument
@@ -1299,7 +1287,7 @@ new_za_Wgn_met_instr_all <-c("date_time", "Global radiation [W/m2]", "RH [%]", "
 
 
 ZA_WGN_MET_instr<- za_wgn_met_instr_all %>% dplyr::select(one_of(new_za_Wgn_met_instr_all))
-#View(ZA_WGN_MET_instr)
+
 
 
 
@@ -1327,7 +1315,7 @@ new_ZM_Mon_vars <- c("TIMESTAMP_START", "H_F_MDS", "H_F_MDS_QC", "LE_F_MDS", "LE
                      "NEE_VUT_REF_QC", "NEE_CUT_REF", "NEE_CUT_REF_QC")
 
 ZM_Mon_Flux<- ZM_Mon %>% dplyr::select(one_of(new_ZM_Mon_vars))
-#View(ZM_Mon_Flux)
+
 
 
 # Create new columns for each variable, retaining values only where QC is 0
@@ -1344,7 +1332,7 @@ new_ZM_Mon_vars_2 <- c("TIMESTAMP_START", "H_F_MDS_Measured", "LE_F_MDS_Measured
                        "NEE_CUT_REF_Measured")
 
 ZM_Mon_Flux_new<- ZM_Mon_Measured %>% dplyr::select(one_of(new_ZM_Mon_vars_2))
-#View(CG_TCH_Flux)
+
 
 
 
@@ -1363,7 +1351,6 @@ new_ZM_Mon_met <- c("TIMESTAMP_START", "TA_F_MDS", "TA_F_MDS_QC", "SW_IN_F_MDS",
                     "LW_IN_F_MDS", "LW_IN_F_MDS_QC", "PA", "PA_ERA", "P", "WS", "RH", "VPD_F_MDS", "VPD_F_MDS_QC")
 
 ZM_MON_MET<- ZM_Mon %>% dplyr::select(one_of(new_ZM_Mon_met))
-#View(ZM_Mon_MET)
 
 # Create new columns for each variable, retaining values only where QC is 0
 ZM_MON_MET<- ZM_MON_MET %>%
