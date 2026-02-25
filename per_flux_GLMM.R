@@ -297,8 +297,8 @@ add_pval <- function(plt, mod, term, show = c("stars","p"), digits = 2) {
 
 # draw a larger p-label on top (stars or numeric)
 add_pval <- function(plt, mod, term, show = c("stars","p"),
-                         size = 10, colour = "black",
-                         hjust = 1.1, vjust = 1.3) {
+                     size = 10, colour = "black",
+                     hjust = 1.1, vjust = 1.3) {
   show <- match.arg(show)
   p <- get_term_p(mod, term)
   lab <- if (show == "stars") p_stars(p) else paste0("p = ", format.pval(p, digits = 2, eps = 1e-3))
@@ -390,6 +390,31 @@ group_y_label <- function(text, size = 18, face = "bold", vjust = 0.5) {
 
 
 
+# Custom theme without grid lines
+#custom_theme <- theme_minimal() +
+# theme(
+#  axis.title = element_text(size = 23),
+# axis.text = element_text(size = 19),
+#legend.text = element_text(size = 22),
+#legend.title = element_text(size = 20),
+#  line = element_line(linewidth = 1.3),
+# panel.border = element_rect(color = "black", fill = NA, linewidth = 1.1),
+#panel.grid.major = element_blank(),  # remove major grid lines
+#  panel.grid.minor = element_blank()   # remove minor grid lines
+#)
+
+
+
+# Define better color and thickness
+#my_palette <- c(
+# "ET"    = "#E64B35",  # Red
+#"GPP"   = "#3C5488",  # Blue  
+#"Reco"  = "#00A087"   # Teal
+#)
+
+
+
+
 
 #### GPP_Bias ----
 
@@ -402,7 +427,11 @@ plot_GPP_bias_mat <- plot(ggpredict(GPP_Bias, terms = c("MAT"))) +
         panel.grid.minor = element_blank(),
         axis.text.y   = element_text(size = 19, face = "bold"),
         axis.title.y = element_text(size = 22, face = "bold"))
-  
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -413,7 +442,11 @@ plot_GPP_bias_ai <- plot(ggpredict(GPP_Bias, terms = c("AI"))) +
   geom_hline(yintercept = 0, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-  
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8)
 
 
 
@@ -424,7 +457,12 @@ plot_GPP_bias_Precip_Anomaly <- plot(ggpredict(GPP_Bias, terms = c("Precip_Anoma
   geom_hline(yintercept = 0, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-  
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8)
+
 
 
 # GPP — Bias
@@ -463,7 +501,14 @@ ggsave(
 
 
 
-
+# Repeat for MAP
+#plot_GPP_bias_map <- plot(ggpredict(GPP_Bias, terms = c("MAP"))) +
+# geom_line(linewidth = 1.3) +
+# labs(x = "Mean Annual Precipitation (mm)", y = "Predicted Bias") +
+# scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+#ggtitle(NULL)
 
 
 
@@ -478,7 +523,11 @@ plot_ET_bias_mat <- plot(ggpredict(ET_Bias, terms = c("MAT"))) +
         panel.grid.minor = element_blank(),
         axis.text.y   = element_text(size = 19, face = "bold"),
         axis.title.y = element_text(size = 22, face = "bold"))
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -489,7 +538,11 @@ plot_ET_bias_ai <- plot(ggpredict(ET_Bias, terms = c("AI"))) +
   geom_hline(yintercept = 0, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -500,8 +553,11 @@ plot_ET_bias_Precip_Anomaly <- plot(ggpredict(ET_Bias, terms = c("Precip_Anomaly
   geom_hline(yintercept = 0, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -541,7 +597,14 @@ ggsave(
 
 
 
-
+# Repeat for MAP
+#plot_ET_bias_map <- plot(ggpredict(ET_Bias, terms = c("MAP"))) +
+# geom_line(linewidth = 1.3) +
+# labs(x = "Mean Annual Precipitation (mm)", y = "Predicted Bias") +
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+#ggtitle(NULL)
 
 
 
@@ -556,7 +619,11 @@ plot_Reco_bias_mat <- plot(ggpredict(Reco_Bias, terms = c("MAT"))) +
         panel.grid.minor = element_blank(),
         axis.text.y   = element_text(size = 19, face = "bold"),
         axis.title.y = element_text(size = 22, face = "bold"))
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -568,7 +635,11 @@ plot_Reco_bias_ai <- plot(ggpredict(Reco_Bias, terms = c("AI"))) +
   geom_hline(yintercept = 0, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -580,7 +651,11 @@ plot_Reco_bias_Precip_Anomaly <- plot(ggpredict(Reco_Bias, terms = c("Precip_Ano
   geom_hline(yintercept = 0, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -623,7 +698,14 @@ ggsave(
 
 
 
-
+# Repeat for MAP
+#plot_Reco_bias_map <- plot(ggpredict(Reco_Bias, terms = c("MAP"))) +
+# geom_line(linewidth = 1.3) +
+# labs(x = "Mean Annual Precipitation (mm)", y = "Predicted Bias") +
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+#ggtitle(NULL)
 
 
 
@@ -735,7 +817,11 @@ plot_GPP_Rmse_mat <- plot(ggpredict(GPP_Rmse, terms = c("MAT"))) +
         panel.grid.minor = element_blank(),
         axis.text.y   = element_text(size = 19, face = "bold"),
         axis.title.y = element_text(size = 22, face = "bold"))
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -746,8 +832,11 @@ plot_GPP_Rmse_ai <- plot(ggpredict(GPP_Rmse, terms = c("AI"))) +
   geom_hline(yintercept = 0, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 # Repeat for Precipitation Anomaly
@@ -757,9 +846,11 @@ plot_GPP_Rmse_Precip_Anomaly <- plot(ggpredict(GPP_Rmse, terms = c("Precip_Anoma
   geom_hline(yintercept = 0, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-
-
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -797,6 +888,14 @@ ggsave(
 
 
 
+# Repeat for MAP
+#plot_GPP_Rmse_map <- plot(ggpredict(GPP_Rmse, terms = c("MAP"))) +
+#geom_line(linewidth = 1.3) +
+#labs(x = "Mean Annual Precipitation (mm)", y = "Predicted Rmse") +
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+#ggtitle(NULL)
 
 
 
@@ -811,7 +910,11 @@ plot_ET_Rmse_mat <- plot(ggpredict(ET_Rmse, terms = c("MAT"))) +
         panel.grid.minor = element_blank(),
         axis.text.y   = element_text(size = 19, face = "bold"),
         axis.title.y = element_text(size = 22, face = "bold"))
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -823,8 +926,11 @@ plot_ET_Rmse_ai <- plot(ggpredict(ET_Rmse, terms = c("AI"))) +
   geom_hline(yintercept = 0, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -835,8 +941,11 @@ plot_ET_Rmse_Precip_Anomaly <- plot(ggpredict(ET_Rmse, terms = c("Precip_Anomaly
   geom_hline(yintercept = 0, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -877,8 +986,14 @@ ggsave(
 
 
 
-
-
+# Repeat for MAP
+#plot_ET_Rmse_map <- plot(ggpredict(ET_Rmse, terms = c("MAP"))) +
+# geom_line(linewidth = 1.3) +
+# labs(x = "Mean Annual Precipitation (mm)", y = "Predicted Rmse") +
+# scale_color_manual(values = my_palette) +
+# scale_fill_manual(values = my_palette) +
+# custom_theme +
+# ggtitle(NULL)
 
 
 
@@ -894,8 +1009,11 @@ plot_Reco_Rmse_mat <- plot(ggpredict(Reco_Rmse, terms = c("MAT"))) +
         panel.grid.minor = element_blank(),
         axis.text.y   = element_text(size = 19, face = "bold"),
         axis.title.y = element_text(size = 22, face = "bold"))
-
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -907,8 +1025,11 @@ plot_Reco_Rmse_ai <- plot(ggpredict(Reco_Rmse, terms = c("AI"))) +
   geom_hline(yintercept = 0, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -919,8 +1040,11 @@ plot_Reco_Rmse_Precip_Anomaly <- plot(ggpredict(Reco_Rmse, terms = c("Precip_Ano
   geom_hline(yintercept = 0, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -959,7 +1083,14 @@ ggsave(
 )
 
 
-
+# Repeat for MAP
+#plot_Reco_Rmse_map <- plot(ggpredict(Reco_Rmse, terms = c("MAP"))) +
+#  geom_line(linewidth = 1.3) +
+#  labs(x = "Mean Annual Precipitation (mm)", y = "Predicted Rmse") +
+#  scale_color_manual(values = my_palette) +
+#  scale_fill_manual(values = my_palette) +
+#  custom_theme +
+#  ggtitle(NULL)
 
 
 
@@ -1074,8 +1205,11 @@ plot_GPP_Corr_mat <- plot(ggpredict(GPP_Corr, terms = c("MAT"))) +
         panel.grid.minor = element_blank(),
         axis.text.y   = element_text(size = 19, face = "bold"),
         axis.title.y = element_text(size = 22, face = "bold"))
-
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -1086,8 +1220,11 @@ plot_GPP_Corr_ai <- plot(ggpredict(GPP_Corr, terms = c("AI"))) +
   geom_hline(yintercept = 1, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -1098,8 +1235,11 @@ plot_GPP_Corr_Precip_Anomaly <- plot(ggpredict(GPP_Corr, terms = c("Precip_Anoma
   geom_hline(yintercept = 1, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -1138,6 +1278,14 @@ ggsave(
 
 
 
+# Repeat for MAP
+#plot_GPP_Corr_map <- plot(ggpredict(GPP_Corr, terms = c("MAP"))) +
+#  geom_line(linewidth = 1.3) +
+#  labs(x = "Mean Annual Precipitation (mm)", y = "Predicted Corr") +
+# scale_color_manual(values = my_palette) +
+# scale_fill_manual(values = my_palette) +
+# custom_theme +
+# ggtitle(NULL)
 
 
 
@@ -1154,8 +1302,11 @@ plot_ET_Corr_mat <- plot(ggpredict(ET_Corr, terms = c("MAT"))) +
         panel.grid.minor = element_blank(),
         axis.text.y   = element_text(size = 19, face = "bold"),
         axis.title.y = element_text(size = 22, face = "bold"))
-
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -1167,6 +1318,11 @@ plot_ET_Corr_ai <- plot(ggpredict(ET_Corr, terms = c("AI"))) +
   geom_hline(yintercept = 1, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -1178,8 +1334,11 @@ plot_ET_Corr_Precip_Anomaly <- plot(ggpredict(ET_Corr, terms = c("Precip_Anomaly
   geom_hline(yintercept = 1, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -1223,7 +1382,14 @@ ggsave(
 
 
 
-
+# Repeat for MAP
+#plot_ET_Corr_map <- plot(ggpredict(ET_Corr, terms = c("MAP"))) +
+#  geom_line(linewidth = 1.3) +
+#  labs(x = "Mean Annual Precipitation (mm)", y = "Predicted Corr") +
+#  scale_color_manual(values = my_palette) +
+#  scale_fill_manual(values = my_palette) +
+#  custom_theme +
+#  ggtitle(NULL)
 
 
 
@@ -1239,8 +1405,11 @@ plot_Reco_Corr_mat <- plot(ggpredict(Reco_Corr, terms = c("MAT"))) +
         panel.grid.minor = element_blank(),
         axis.text.y   = element_text(size = 19, face = "bold"),
         axis.title.y = element_text(size = 22, face = "bold"))
-
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -1252,8 +1421,11 @@ plot_Reco_Corr_ai <- plot(ggpredict(Reco_Corr, terms = c("AI"))) +
   geom_hline(yintercept = 1, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -1264,8 +1436,11 @@ plot_Reco_Corr_Precip_Anomaly <- plot(ggpredict(Reco_Corr, terms = c("Precip_Ano
   geom_hline(yintercept = 1, linetype = "dashed", colour = "blue", linewidth = 0.8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
-
-
+#scale_color_manual(values = my_palette) +
+#scale_fill_manual(values = my_palette) +
+#custom_theme +
+# + 
+#geom_hline(yintercept = 0, linetype = "dashed", colour = "red", linewidth = 0.8) 
 
 
 
@@ -1307,7 +1482,14 @@ ggsave(
 
 
 
-
+# Repeat for MAP
+#plot_Reco_Corr_map <- plot(ggpredict(Reco_Corr, terms = c("MAP"))) +
+# geom_line(linewidth = 1.3) +
+#  labs(x = "Mean Annual Precipitation (mm)", y = "Predicted Corr") +
+# scale_color_manual(values = my_palette) +
+# scale_fill_manual(values = my_palette) +
+# custom_theme +
+# ggtitle(NULL)
 
 
 
