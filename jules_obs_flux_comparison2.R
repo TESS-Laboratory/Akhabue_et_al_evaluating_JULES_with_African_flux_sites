@@ -88,9 +88,9 @@ process_flux_site <- function(site_label, ncd_path, csv_path) {
   jules_df <- def_df %>%
     select(time_bounds_2, gpp_gb, Reco_gb, ftl_gb, latent_heat, ET_kg_m2_s, fao_et0) %>%
     mutate(label = site_label,
-           gpp_gb  = gpp_gb  * 1000 * 86400,   # kg → g / day JUST COMMENT THIS OUT IF  NO LONGER NEED THIS 
-           Reco_gb = Reco_gb * 1000 * 86400    # kg → g / day JUST COMMENT THIS OUT IF  NO LONGER NEED THIS
-           )
+           gpp_gb  = gpp_gb  * 1000 * 86400,   # kg → g / day JUST COMMENT THIS OUT IF I NO LONGER NEED THIS 
+           Reco_gb = Reco_gb * 1000 * 86400    # kg → g / day JUST COMMENT THIS OUT IF I NO LONGER NEED THIS
+    )
   
   obs_df <- read_csv(csv_path, show_col_types = FALSE) %>%
     mutate(
@@ -119,9 +119,9 @@ process_flux_site <- function(site_label, ncd_path, csv_path) {
   obs_main <- obs_daily %>%
     rename_with(~c("time_bounds_2", "gpp_gb", "Reco_gb", "ftl_gb", "latent_heat", "ET_kg_m2_s")) %>%
     mutate(time_bounds_2 = as.POSIXct(time_bounds_2), label = "Observed",
-           gpp_gb  = gpp_gb  * 1000 * 86400,   # kg → g / day JUST COMMENT THIS OUT IF  NO LONGER NEED THIS
-           Reco_gb = Reco_gb * 1000 * 86400    # kg → g / day JUST COMMENT THIS OUT IF  NO LONGER NEED THIS
-           )
+           gpp_gb  = gpp_gb  * 1000 * 86400,   # kg → g / day JUST COMMENT THIS OUT IF I NO LONGER NEED THIS
+           Reco_gb = Reco_gb * 1000 * 86400    # kg → g / day JUST COMMENT THIS OUT IF I NO LONGER NEED THIS
+    )
   
   obs_et0 <- obs_daily %>%
     select(time_bounds_2 = date, fao_et0 = ET_daily_mean) %>%
@@ -155,8 +155,8 @@ site_map <- tribble(
   "CG_TCH - Grassland",        "CG_TCH_with_ET.csv",        "part6_CG_TCH-JULES_vn7.4.D.nc",
   "GH_ANK - Forest",           "GH_ANK_with_ET.csv",        "part6_GH_ANK-JULES_vn7.4.D.nc",
   "ML_AGG - Grassland",        "ML_AGG_with_ET.csv",        "part6_ML_AGG-JULES_vn7.4.D.nc",
-  "NE_WAF - Savanna",          "NE_WAF_with_ET.csv",        "part6_NE_WAF-JULES_vn7.4.D.nc",
-  "NE_WAM - Savanna",          "NE_WAM_with_ET.csv",        "part6_NE_WAM-JULES_vn7.4.D.nc",
+  "NE_WAF - Savanna-Cropland", "NE_WAF_with_ET.csv",        "part6_NE_WAF-JULES_vn7.4.D.nc",
+  "NE_WAM - Cropland-Savanna", "NE_WAM_with_ET.csv",        "part6_NE_WAM-JULES_vn7.4.D.nc",
   "SD_DEM - Grassland",        "SD_DEM_with_ET.csv",        "part6_SD_DEM-JULES_vn7.4.D.nc",
   "SN_DHR - Grassland",        "SN_DHR_with_ET.csv",        "part6_SN_DHR-JULES_vn7.4.D.nc",
   "SN_NKR - Cropland",         "SN_NKR_with_ET.csv",        "part6_SN_NKR-JULES_vn7.4.D.nc",
@@ -214,6 +214,27 @@ for (var in var_list) {
     ))
   })
   
+  
+  # ADD NEW BLOCK #
+  # if (var %in% c("GPP", "Reco")) {
+  # 1) Scale plotted values to g m^-2 s^-1
+  #  plot_var <- plot_var %>% mutate(value = value * 1000)
+  
+  # 2) Scale stats to g m^-2 s^-1 so facet labels match units
+  #   stats_labels <- stats_labels %>%
+  #  mutate(
+  #    bias = bias * 1000,
+  #   rmse = rmse * 1000,
+  #   facet_label = paste0(
+  #     label, "\n",
+  #    "COR=", signif(cor, 2), ", Bias=", signif(bias, 2), ", RMSE=", signif(rmse, 2)
+  #   )
+  #  )
+  
+  #  # 3) Update y-axis label to grams
+  #  label_with_units <- if (var == "GPP") "GPP (g C m⁻² s⁻¹)" else "Reco (g C m⁻² s⁻¹)"
+  #  }
+  # END NEW BLOCK #
   
   
   
