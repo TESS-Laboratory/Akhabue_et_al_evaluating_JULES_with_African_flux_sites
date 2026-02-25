@@ -8,16 +8,6 @@ library(stringr)
 library(lubridate)
 
 
-# change column name
-# change datetime format
-# do conversion
-# interpolation - half hourly
-# plot interpolated and original
-# calculate VPD
-
-
-# for BJ_BEF  ----
-
 
 
 # for BW_GUM  ----
