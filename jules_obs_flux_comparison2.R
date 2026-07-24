@@ -177,93 +177,270 @@ for (i in 1:nrow(site_map)) {
   )
 }
 
+
+# ------------------------------------------------------------
+# Desired site order: sites from the same ecosystem type
+# are placed consecutively
+# ------------------------------------------------------------
+
+site_order <- c(
+  # Wetland
+  "BW_GUM - Wetland",
+  "BW_NXR - Wetland",
+  "UG_JIN - Wetland",
+  
+  # Forest
+  "GH_ANK - Forest",
+  "ZM_MON - Forest",
+  
+  # Grassland
+  "CG_TCH - Grassland",
+  "ML_AGG - Grassland",
+  "SD_DEM - Grassland",
+  "SN_DHR - Grassland",
+  "ZA_CATH - Grassland",
+  "ZA_WGN - Grassland",
+  
+  # Cropland
+  "SN_NKR - Cropland",
+  "SN_RAG - Cropland",
+  
+  # Mixed savanna-cropland ecosystems
+  "NE_WAF - Savanna-Cropland",
+  "NE_WAM - Cropland-Savanna",
+  
+  # Savanna
+  "ZA_KRU - Savanna"
+)
+
 # ----------- Plot Each Variable Across All Sites ---------------
+
 plot_df_all_sites <- bind_rows(all_plot_data)
+
 var_list <- unique(plot_df_all_sites$variable)
-dir.create("variable_plots", showWarnings = FALSE)
+
+dir.create(
+  "variable_plots",
+  showWarnings = FALSE
+)
+
 
 for (var in var_list) {
-  plot_var <- plot_df_all_sites %>% filter(variable == var)
-  var_actual <- recode(var,
-                       "GPP" = "gpp_gb",
-                       "Reco" = "Reco_gb",
-                       "SH" = "ftl_gb",
-                       "LE" = "latent_heat",
-                       "ET" = "ET_kg_m2_s",
-                       "FAO_ET" = "fao_et0")
   
-  label_with_units <- recode(var,
-                             "GPP"     = "GPP (g C m⁻² day⁻¹)",
-                             "Reco"    = "Reco (g C m⁻² day⁻¹)",
-                             "SH"      = "SH (W m⁻²)",
-                             "LE"      = "LE (W m⁻²)",
-                             "ET"      = "ET (kg m⁻² s⁻¹)",
-                             "FAO_ET"  = "FAO ET (kg m⁻² s⁻¹)"
+  plot_var <- plot_df_all_sites %>%
+    filter(variable == var)
+  
+  
+  var_actual <- recode(
+    var,
+    "GPP" = "gpp_gb",
+    "Reco" = "Reco_gb",
+    "SH" = "ftl_gb",
+    "LE" = "latent_heat",
+    "ET" = "ET_kg_m2_s",
+    "FAO_ET" = "fao_et0"
   )
   
-  stats_labels <- map_dfr(names(all_plot_data), function(site) {
-    df <- if (var == "FAO_ET") {
-      all_stat_data[[site]]$combined_et0
-    } else {
-      all_stat_data[[site]]$combined_all
+  
+  label_with_units <- recode(
+    var,
+    "GPP" = "GPP (g C m⁻² day⁻¹)",
+    "Reco" = "Reco (g C m⁻² day⁻¹)",
+    "SH" = "SH (W m⁻²)",
+    "LE" = "LE (W m⁻²)",
+    "ET" = "ET (kg m⁻² s⁻¹)",
+    "FAO_ET" = "FAO ET (kg m⁻² s⁻¹)"
+  )
+  
+  
+  stats_labels <- map_dfr(
+    names(all_plot_data),
+    function(site) {
+      
+      df <- if (var == "FAO_ET") {
+        all_stat_data[[site]]$combined_et0
+      } else {
+        all_stat_data[[site]]$combined_all
+      }
+      
+      
+      stat <- stat_tab_multi(
+        df,
+        site,
+        var_actual,
+        var
+      )
+      
+      
+      stat %>%
+        mutate(
+          facet_label = paste0(
+            site,
+            "\n",
+            "COR=", signif(cor, 2),
+            ", Bias=", signif(bias, 2),
+            ", RMSE=", signif(rmse, 2)
+          )
+        )
     }
-    stat <- stat_tab_multi(df, site, var_actual, var)
-    stat %>% mutate(facet_label = paste0(
-      site, "\n",
-      "COR=", signif(cor, 2), ", Bias=", signif(bias, 2), ", RMSE=", signif(rmse, 2)
-    ))
-  })
+  )
   
+  # Convert ET from kg m^-2 s^-1 to mm day^-1
+  if (var == "ET") {
+    
+    plot_var <- plot_var %>%
+      mutate(value = value * 86400)
+    
+    stats_labels <- stats_labels %>%
+      mutate(
+        bias = bias * 86400,
+        rmse = rmse * 86400,
+        facet_label = paste0(
+          label,
+          "\n",
+          "COR=", signif(cor, 2),
+          ", Bias=", signif(bias, 2),
+          ", RMSE=", signif(rmse, 2)
+        )
+      )
+    
+    label_with_units <- "ET (mm day⁻¹)"
+  }
   
-  # ADD NEW BLOCK #
+  # ADD NEW BLOCK
   # if (var %in% c("GPP", "Reco")) {
-  # 1) Scale plotted values to g m^-2 s^-1
-  #  plot_var <- plot_var %>% mutate(value = value * 1000)
   
-  # 2) Scale stats to g m^-2 s^-1 so facet labels match units
+  #   # 1) Scale plotted values to g m^-2 s^-1
+  #   plot_var <- plot_var %>%
+  #     mutate(value = value * 1000)
+  
+  #   # 2) Scale stats to g m^-2 s^-1 so facet labels match units
   #   stats_labels <- stats_labels %>%
-  #  mutate(
-  #    bias = bias * 1000,
-  #   rmse = rmse * 1000,
-  #   facet_label = paste0(
-  #     label, "\n",
-  #    "COR=", signif(cor, 2), ", Bias=", signif(bias, 2), ", RMSE=", signif(rmse, 2)
-  #   )
-  #  )
+  #     mutate(
+  #       bias = bias * 1000,
+  #       rmse = rmse * 1000,
+  #       facet_label = paste0(
+  #         label,
+  #         "\n",
+  #         "COR=", signif(cor, 2),
+  #         ", Bias=", signif(bias, 2),
+  #         ", RMSE=", signif(rmse, 2)
+  #       )
+  #     )
   
-  #  # 3) Update y-axis label to grams
-  #  label_with_units <- if (var == "GPP") "GPP (g C m⁻² s⁻¹)" else "Reco (g C m⁻² s⁻¹)"
-  #  }
-  # END NEW BLOCK #
+  #   # 3) Update y-axis label to grams
+  #   label_with_units <- if (var == "GPP") {
+  #     "GPP (g C m⁻² s⁻¹)"
+  #   } else {
+  #     "Reco (g C m⁻² s⁻¹)"
+  #   }
+  # }
+  # END NEW BLOCK
   
   
+  # ----------------------------------------------------------
+  # Establish the desired facet order
+  # ----------------------------------------------------------
+  
+  facet_levels <- stats_labels %>%
+    distinct(label, facet_label) %>%
+    mutate(
+      site_order_number = match(label, site_order)
+    ) %>%
+    arrange(site_order_number) %>%
+    pull(facet_label)
   
   
   plot_var <- plot_var %>%
-    left_join(stats_labels %>% select(site = label, facet_label), by = "site")
+    left_join(
+      stats_labels %>%
+        select(
+          site = label,
+          facet_label
+        ),
+      by = "site"
+    ) %>%
+    mutate(
+      facet_label = factor(
+        facet_label,
+        levels = facet_levels
+      )
+    )
   
   
   p <- ggplot(plot_var) +
-    aes(x = time_bounds_2, y = value, colour = Source) +
-    geom_line(linewidth = 0.4) +
-    guides(colour = guide_legend(override.aes = list(linewidth = 2))) +
-    facet_wrap(~facet_label, scales = "free", ncol = 3) +
-    scale_color_brewer(palette = "Set2") +
-    theme_minimal(base_family = "") +
-    theme(
-      plot.background = element_rect(fill = "white", color = NA),
-      panel.background = element_rect(fill = "white", color = NA),
-      legend.position = "bottom",
-      legend.text = element_text(size = 16),  # ← make legend labels bigger
-      legend.title = element_blank(),
-      strip.text = element_text(size = 16, face = "bold"),
-      axis.title = element_text(size = 18, face = "bold"),
-      axis.text = element_text(size = 16, face = "bold")
+    aes(
+      x = time_bounds_2,
+      y = value,
+      colour = Source
     ) +
-    labs(x = "Date", y = label_with_units, colour = "")
+    geom_line(
+      linewidth = 0.4
+    ) +
+    guides(
+      colour = guide_legend(
+        override.aes = list(
+          linewidth = 2
+        )
+      )
+    ) +
+    facet_wrap(
+      ~facet_label,
+      scales = "free",
+      ncol = 3
+    ) +
+    scale_color_brewer(
+      palette = "Set2"
+    ) +
+    theme_minimal(
+      base_family = ""
+    ) +
+    theme(
+      plot.background = element_rect(
+        fill = "white",
+        color = NA
+      ),
+      panel.background = element_rect(
+        fill = "white",
+        color = NA
+      ),
+      legend.position = "bottom",
+      legend.text = element_text(
+        size = 16
+      ),
+      legend.title = element_blank(),
+      strip.text = element_text(
+        size = 16,
+        face = "bold"
+      ),
+      axis.title = element_text(
+        size = 18,
+        face = "bold"
+      ),
+      axis.text = element_text(
+        size = 16,
+        face = "bold"
+      )
+    ) +
+    labs(
+      x = "Date",
+      y = label_with_units,
+      colour = ""
+    )
+  
   
   ggsave(
-    filename = file.path("variable_plots", paste0("AllSites_", var, ".png")),
-    plot = p, width = 18, height = 14, dpi = 300
+    filename = file.path(
+      "variable_plots",
+      paste0(
+        "AllSites_",
+        var,
+        ".png"
+      )
+    ),
+    plot = p,
+    width = 18,
+    height = 14,
+    dpi = 300
   )
 }
