@@ -161,7 +161,30 @@ lapply(dfs, \(x) unique(x$FluxType))
 
 
 # GLMM ----
-
+make_diagnostic_plot <- function(model) {
+  
+  model_check <- performance::check_model(
+    model,
+    base_size      = 14,
+    size_title     = 18,
+    size_axis_title = 15,
+    size_dot       = 2.5,
+    size_line      = 1
+  )
+  
+  plot(model_check, n_columns = 2) &
+    ggplot2::theme(
+      axis.text = ggplot2::element_text(size = 17, face = "bold"),
+      axis.title = ggplot2::element_text(size = 19, face = "bold"),
+      legend.text = ggplot2::element_text(size = 17, face = "bold"),
+      legend.title = ggplot2::element_text(size = 17, face = "bold"),
+      plot.title = ggplot2::element_text(
+        size = 19,
+        face = "bold"
+      ),
+      plot.subtitle = ggplot2::element_text(size = 17, face = "bold")
+    )
+}
 ## model Bias ----
 
 GPP_Bias <-lmer(scaled_bias ~ MAT + AI + Precip_Anomaly_Percent + (1 | SiteID), data = glmm_GPP)
@@ -177,37 +200,37 @@ summary(Reco_Bias)
 
 
 ### performance and diagnostic check ----
-cm_model_GPP_bias <- performance::check_model(GPP_Bias)
+#cm_model_GPP_bias <- performance::check_model(GPP_Bias)
 
-cm_model_ET_bias <- performance::check_model(ET_Bias)
+#cm_model_ET_bias <- performance::check_model(ET_Bias)
 
-cm_model_Reco_bias <- performance::check_model(Reco_Bias)
+#cm_model_Reco_bias <- performance::check_model(Reco_Bias)
 
 
 
 # 3 columns layout
-plot_cm_model_GPP_bias <- plot(cm_model_GPP_bias, n_columns = 3)
+plot_cm_model_GPP_bias <- make_diagnostic_plot(GPP_Bias)
 
-plot_cm_model_ET_bias <- plot(cm_model_ET_bias, n_columns = 3)
+plot_cm_model_ET_bias <-  make_diagnostic_plot(ET_Bias)
 
-plot_cm_model_Reco_bias <- plot(cm_model_Reco_bias, n_columns = 3)
+plot_cm_model_Reco_bias <- make_diagnostic_plot(Reco_Bias)
 
 
 
 
 # save
 ggplot2::ggsave("model_check_model_GPP_bias_3col.png", plot_cm_model_GPP_bias,
-                width = 18, height = 12, dpi = 600, bg = "white")
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 # save
 ggplot2::ggsave("model_check_model_ET_bias_3col.png", plot_cm_model_ET_bias,
-                width = 18, height = 12, dpi = 600, bg = "white")
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 # save
 ggplot2::ggsave("model_check_model_Reco_bias_3col.png", plot_cm_model_Reco_bias,
-                width = 18, height = 12, dpi = 600, bg = "white")
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 
@@ -724,36 +747,36 @@ summary(Reco_Rmse)
 
 
 ### performance and diagnostic check ----
-cm_model_GPP_Rmse <- performance::check_model(GPP_Rmse)
+#cm_model_GPP_Rmse <- performance::check_model(GPP_Rmse)
 
-cm_model_ET_Rmse <- performance::check_model(ET_Rmse)
+#cm_model_ET_Rmse <- performance::check_model(ET_Rmse)
 
-cm_model_Reco_Rmse <- performance::check_model(Reco_Rmse)
+#cm_model_Reco_Rmse <- performance::check_model(Reco_Rmse)
 
 
 
 # 3 columns layout
-plot_cm_model_GPP_Rmse <- plot(cm_model_GPP_Rmse, n_columns = 3)
+plot_cm_model_GPP_Rmse <- make_diagnostic_plot(GPP_Rmse)
 
-plot_cm_model_ET_Rmse <- plot(cm_model_ET_Rmse, n_columns = 3)
+plot_cm_model_ET_Rmse <- make_diagnostic_plot(ET_Rmse)
 
-plot_cm_model_Reco_Rmse <- plot(cm_model_Reco_Rmse, n_columns = 3)
+plot_cm_model_Reco_Rmse <- make_diagnostic_plot(Reco_Rmse)
 
 
 
 # save
 ggplot2::ggsave("model_check_model_GPP_Rmse_3col.png", plot_cm_model_GPP_Rmse,
-                width = 18, height = 12, dpi = 600, bg = "white")
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 # save
 ggplot2::ggsave("model_check_model_ET_Rmse_3col.png", plot_cm_model_ET_Rmse,
-                width = 18, height = 12, dpi = 600, bg = "white")
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 # save
 ggplot2::ggsave("model_check_model_Reco_Rmse_3col.png", plot_cm_model_Reco_Rmse,
-                width = 18, height = 12, dpi = 600, bg = "white")
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 
@@ -1109,39 +1132,38 @@ summary(Reco_Corr)
 
 
 
-### performance and diagnostic check ----
-cm_model_GPP_Corr <- performance::check_model(GPP_Corr)
+#cm_model_GPP_Corr <- performance::check_model(GPP_Corr)
 
-cm_model_ET_Corr <- performance::check_model(ET_Corr)
+#cm_model_ET_Corr <- performance::check_model(ET_Corr)
 
-cm_model_Reco_Corr <- performance::check_model(Reco_Corr)
+#cm_model_Reco_Corr <- performance::check_model(Reco_Corr)
 
 
 
 
 # 3 columns layout
-plot_cm_model_GPP_Corr <- plot(cm_model_GPP_Corr, n_columns = 3)
+plot_cm_model_GPP_Corr <- make_diagnostic_plot(GPP_Corr)
 
-plot_cm_model_ET_Corr <- plot(cm_model_ET_Corr, n_columns = 3)
+plot_cm_model_ET_Corr <- make_diagnostic_plot(ET_Corr)
 
-plot_cm_model_Reco_Corr <- plot(cm_model_Reco_Corr, n_columns = 3)
+plot_cm_model_Reco_Corr <- make_diagnostic_plot(Reco_Corr)
 
 
 
 
 # save
 ggplot2::ggsave("model_check_model_GPP_Corr_3col.png", plot_cm_model_GPP_Corr,
-                width = 18, height = 12, dpi = 600, bg = "white")
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 # save
 ggplot2::ggsave("model_check_model_ET_Corr_3col.png", plot_cm_model_ET_Corr,
-                width = 18, height = 12, dpi = 600, bg = "white")
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 # save
 ggplot2::ggsave("model_check_model_Reco_Corr_3col.png", plot_cm_model_Reco_Corr,
-                width = 18, height = 12, dpi = 600, bg = "white")
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 
@@ -1625,36 +1647,35 @@ summary(Reco_perf_Bias)
 ### performance and diagnostic check ----
 
 
-cm_model_perf_GPP_bias <- performance::check_model(GPP_perf_Bias)
+#cm_model_perf_GPP_bias <- performance::check_model(GPP_perf_Bias)
 
-cm_model_perf_ET_bias <- performance::check_model(ET_perf_Bias)
+#cm_model_perf_ET_bias <- performance::check_model(ET_perf_Bias)
 
-cm_model_perf_Reco_bias <- performance::check_model(Reco_perf_Bias)
+#cm_model_perf_Reco_bias <- performance::check_model(Reco_perf_Bias)
 
 
 
-plot_cm_model_perf_GPP_bias <- plot(cm_model_perf_GPP_bias, n_columns = 3)
+plot_cm_model_perf_GPP_bias <- make_diagnostic_plot(GPP_perf_Bias)
 
-plot_cm_model_perf_ET_bias <- plot(cm_model_perf_ET_bias, n_columns = 3)
+plot_cm_model_perf_ET_bias <- make_diagnostic_plot(ET_perf_Bias)
 
-plot_cm_model_perf_Reco_bias <- plot(cm_model_perf_Reco_bias, n_columns = 3)
+plot_cm_model_perf_Reco_bias <- make_diagnostic_plot(Reco_perf_Bias)
 
 
 
 # save
 ggplot2::ggsave("model_check_model_perf_GPP_bias_3col.png", plot_cm_model_perf_GPP_bias,
-                width = 18, height = 12, dpi = 600, bg = "white")
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 # save
 ggplot2::ggsave("model_check_model_perf_ET_bias_3col.png", plot_cm_model_perf_ET_bias,
-                width = 18, height = 12, dpi = 600, bg = "white")
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 # save
 ggplot2::ggsave("model_check_model_perf_Reco_bias_3col.png", plot_cm_model_perf_Reco_bias,
-                width = 18, height = 12, dpi = 600, bg = "white")
-
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 # 4
@@ -1954,34 +1975,34 @@ summary(Reco_perf_Rmse)
 
 ### performance and diagnostic check ----
 
-cm_model_perf_GPP_Rmse <- performance::check_model(GPP_perf_Rmse)
+#cm_model_perf_GPP_Rmse <- performance::check_model(GPP_perf_Rmse)
 
-cm_model_perf_ET_Rmse <- performance::check_model(ET_perf_Rmse)
+#cm_model_perf_ET_Rmse <- performance::check_model(ET_perf_Rmse)
 
-cm_model_perf_Reco_Rmse <- performance::check_model(Reco_perf_Rmse)
+#cm_model_perf_Reco_Rmse <- performance::check_model(Reco_perf_Rmse)
 
 
-plot_cm_model_perf_GPP_Rmse <- plot(cm_model_perf_GPP_Rmse, n_columns = 3)
+plot_cm_model_perf_GPP_Rmse <- make_diagnostic_plot(GPP_perf_Rmse)
 
-plot_cm_model_perf_ET_Rmse <- plot(cm_model_perf_ET_Rmse, n_columns = 3)
+plot_cm_model_perf_ET_Rmse <- make_diagnostic_plot(ET_perf_Rmse)
 
-plot_cm_model_perf_Reco_Rmse <- plot(cm_model_perf_Reco_Rmse, n_columns = 3)
+plot_cm_model_perf_Reco_Rmse <- make_diagnostic_plot(Reco_perf_Rmse)
 
 
 
 # save
 ggplot2::ggsave("model_check_model_perf_GPP_Rmse_3col.png", plot_cm_model_perf_GPP_Rmse,
-                width = 18, height = 12, dpi = 600, bg = "white")
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 # save
 ggplot2::ggsave("model_check_model_perf_ET_Rmse_3col.png", plot_cm_model_perf_ET_Rmse,
-                width = 18, height = 12, dpi = 600, bg = "white")
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 # save
 ggplot2::ggsave("model_check_model_perf_Reco_Rmse_3col.png", plot_cm_model_perf_Reco_Rmse,
-                width = 18, height = 12, dpi = 600, bg = "white")
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 
@@ -2274,35 +2295,35 @@ summary(Reco_perf_Corr)
 ### performance and diagnostic check ----
 
 
-cm_model_perf_GPP_Corr <- performance::check_model(GPP_perf_Corr)
+#cm_model_perf_GPP_Corr <- performance::check_model(GPP_perf_Corr)
 
-cm_model_perf_ET_Corr <- performance::check_model(ET_perf_Corr)
+#cm_model_perf_ET_Corr <- performance::check_model(ET_perf_Corr)
 
-cm_model_perf_Reco_Corr <- performance::check_model(Reco_perf_Corr)
+#cm_model_perf_Reco_Corr <- performance::check_model(Reco_perf_Corr)
 
 
-plot_cm_model_perf_GPP_Corr <- plot(cm_model_perf_GPP_Corr, n_columns = 3)
+plot_cm_model_perf_GPP_Corr <- make_diagnostic_plot(GPP_perf_Corr)
 
-plot_cm_model_perf_ET_Corr <- plot(cm_model_perf_ET_Corr, n_columns = 3)
+plot_cm_model_perf_ET_Corr <- make_diagnostic_plot(ET_perf_Corr)
 
-plot_cm_model_perf_Reco_Corr <- plot(cm_model_perf_Reco_Corr, n_columns = 3)
+plot_cm_model_perf_Reco_Corr <- make_diagnostic_plot(Reco_perf_Corr)
 
 
 
 
 # save
 ggplot2::ggsave("model_check_model_perf_GPP_Corr_3col.png", plot_cm_model_perf_GPP_Corr,
-                width = 18, height = 12, dpi = 600, bg = "white")
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 # save
 ggplot2::ggsave("model_check_model_perf_ET_Corr_3col.png", plot_cm_model_perf_ET_Corr,
-                width = 18, height = 12, dpi = 600, bg = "white")
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 # save
 ggplot2::ggsave("model_check_model_perf_Reco_Corr_3col.png", plot_cm_model_perf_Reco_Corr,
-                width = 18, height = 12, dpi = 600, bg = "white")
+                width = 18, height = 20, dpi = 600, bg = "white")
 
 
 
