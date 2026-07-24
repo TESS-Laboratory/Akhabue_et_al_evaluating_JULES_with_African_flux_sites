@@ -10,25 +10,25 @@ library(dplyr)
 # BW_GUM ----
 
 
-BW_NXR_processed <- read.csv("C:/Users/efa206/OneDrive - University of Exeter/Desktop/processed_output/BW_NXR_gapfilling_processed.csv", stringsAsFactors = FALSE)
+BW_GUM_processed <- read.csv("C:/Users/efa206/OneDrive - University of Exeter/Desktop/processed_output/BW_GUM_gapfilling_processed.csv", stringsAsFactors = FALSE)
 
 
-BW_NXR_flux <- read.csv("C:/Users/efa206/OneDrive - University of Exeter/Desktop/Flux_data/BW_NXR_DATA.csv", stringsAsFactors = FALSE)
+BW_GUM_flux <- read.csv("C:/Users/efa206/OneDrive - University of Exeter/Desktop/Flux_data/BW_GUM_DATA.csv", stringsAsFactors = FALSE)
 
 
 # Merge the two datasets by DateTime
-BW_NXR_combined_data <- merge(BW_NXR_processed, BW_NXR_flux, by = "DateTime")
+BW_BW_GUM_combined_data <- merge(BW_GUM_processed, BW_GUM_flux, by = "DateTime")
 
 # Select only the columns of interest
 
-BW_NXR_selected_data <- BW_NXR_combined_data[, c("DateTime", "co2_flux", "ERA5_Temp_C", "ERA5_SSR_W.M2", "VPD_hPa")]
+BW_GUM_selected_data <- BW_GUM_combined_data[, c("DateTime", "co2_flux", "ERA5_Temp_C", "ERA5_SSR_W.M2", "VPD_hPa")]
 
-colnames(BW_NXR_selected_data) <- c("datetime", "NEE", "TA", "PAR", "VPD")
+colnames(BW_GUM_selected_data) <- c("datetime", "NEE", "TA", "PAR", "VPD")
 
 
 
-write.csv(BW_NXR_selected_data, 
-          file = "C:/Users/efa206/OneDrive - University of Exeter/Desktop/for_partitioning/BW_NXR_selected.csv", 
+write.csv(BW_GUM_selected_data, 
+          file = "C:/Users/efa206/OneDrive - University of Exeter/Desktop/for_partitioning/BW_GUM_selected.csv", 
           row.names = FALSE)
 
 
