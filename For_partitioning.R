@@ -55,7 +55,7 @@ colnames(BW_NXR_selected_data) <- c("datetime", "NEE", "TA", "PAR", "VPD")
 
 write.csv(BW_NXR_selected_data, 
           file = "C:/Users/efa206/OneDrive - University of Exeter/Desktop/for_partitioning/BW_NXR_selected.csv", 
-          row.names = FALSE)lux <- read.csv("C:/Users/efa206/OneDrive - University of Exeter/Desktop/Flux_data/BW_NXR_DATA.csv", stringsAsFactors = FALSE)
+          row.names = FALSE)
 
 
 
