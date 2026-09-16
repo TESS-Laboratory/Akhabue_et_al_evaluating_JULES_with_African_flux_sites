@@ -119,6 +119,11 @@ fsmc_lai_temp_precip.R
 Extracts and visualises JULES soil-moisture stress, leaf area index, temperature and precipitation variables across the study sites. 
 It examines both grid-box and plant-functional-type-level outputs to help diagnose simulated vegetation and environmental behaviour.
 
+trunk.tar.gz
+Compressed archive of the final Rose suite configuration used to run the JULES simulations for this study. 
+It contains the suite configuration, metadata, and associated files required to reproduce the model setup.
+
+
 ## Project and reproducibility files
 Plots/
 Contains selected figures generated from the analysis, including the flux-site climate-space and environmental-gradient figures.
